@@ -4,7 +4,7 @@ const { Router } = require('express')
 const { verifyToken } = require('../middlewares/authentication')
 
 const { register, login, verifyUser, logOut, resendCode, forgotPassword, verifyCode, resetPassword, updatePassword, socialLogin } = require('../controllers/authController')
-const { addCard, getCard } = require('../Controllers/cardController')
+const { addCard, getCard, payment } = require('../Controllers/cardController')
 
 
 
@@ -26,6 +26,7 @@ router.post('/socialLogin', socialLogin)
 //Card
 router.post('/addcard', verifyToken, addCard)
 router.get('/getcard', verifyToken, getCard)
+router.post('/payment', verifyToken, payment)
 
 
 

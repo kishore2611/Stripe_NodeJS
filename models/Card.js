@@ -19,7 +19,7 @@ const cardSchema = new mongoose.Schema(
     //     type: String
     // },
     cvv: {
-      type: Number,
+      type: String,
     },
     default: {
       type: Boolean,
@@ -28,6 +28,9 @@ const cardSchema = new mongoose.Schema(
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    customerId:{
+      type: String,
     },
     transaction:{
         tokenId:{type: String, default: null},
