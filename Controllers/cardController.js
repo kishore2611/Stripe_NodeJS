@@ -86,7 +86,7 @@ const addCard = async (req, res) => {
           //     customer: customer.id
           //   });
           // });
-          await stripe.charges.create({
+          const charge = await stripe.charges.create({
             amount: req.body.amount,
             description: req.body.description,
             currency: "USD",
@@ -95,14 +95,14 @@ const addCard = async (req, res) => {
 
           
 
-        const paymentIntent = await stripe.paymentIntents.create({
-          customer: customer.id,
-          setup_future_usage: "off_session",
-          amount: req.body.amount,
-          currency: "usd",
-          payment_method_types: ["card"],
-          description: req.body.description,
-        });
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //   customer: customer.id,
+        //   setup_future_usage: "off_session",
+        //   amount: req.body.amount,
+        //   currency: "usd",
+        //   payment_method_types: ["card"],
+        //   description: req.body.description,
+        // });
 
         const date = token.card.exp_month + "/" + token.card.exp_year;
         const card = await Card({
@@ -112,30 +112,30 @@ const addCard = async (req, res) => {
           cvv: token.card.cvc_check,
           default: req.body.default,
           user_id: req.user._id,
-          customerId: paymentIntent.customer,
+          customerId: customer.id,
           "transaction.tokenId": token.id,
-          "transaction.amount": paymentIntent.amount,
-          "transaction.description": paymentIntent.description
+          "transaction.amount": charge.amount,
+          "transaction.description": charge.description
         });
         card.save();
 
-        const session = await stripe.checkout.sessions.create({
-          line_items: [
-            {
-              price_data: {
-                currency: 'usd',
-                product_data: {
-                  name: 'T-shirt',
-                },
-                unit_amount: req.body.amount,
-              },
-              quantity: req.body.quantity,
-            },
-          ],
-          mode: 'payment',
-          success_url: 'https://example.com/success',
-          cancel_url: 'https://example.com/cancel',
-        });
+        // const session = await stripe.checkout.sessions.create({
+        //   line_items: [
+        //     {
+        //       price_data: {
+        //         currency: 'usd',
+        //         product_data: {
+        //           name: 'T-shirt',
+        //         },
+        //         unit_amount: req.body.amount,
+        //       },
+        //       quantity: req.body.quantity,
+        //     },
+        //   ],
+        //   mode: 'payment',
+        //   success_url: 'https://example.com/success',
+        //   cancel_url: 'https://example.com/cancel',
+        // });
 
         // const newcard = await stripe.customers.createSource(
         //     'cus_MBlU0qEpPYY3sP',
@@ -145,8 +145,7 @@ const addCard = async (req, res) => {
         return res.status(200).send({
           status: 1,
           message: "card added",
-          card,
-          session
+          card
         });
       }
     }
